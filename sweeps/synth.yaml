@@ -1,0 +1,31 @@
+name: synth-sweep
+program: mains/train_synth.py
+project: linear-ae-neurips
+method: grid
+parameters:
+  hdim:
+    distribution: categorical
+    values:
+      - 2
+      - 5
+      - 10
+      - 20
+      - 50
+      - 100
+      - 200
+      - 300
+      - 400
+      - 500
+  optimizer:
+    distribution: categorical
+    values:
+      - SGD
+      - Adam
+  model_name:
+    distribution: categorical
+    values:
+      - non_uniform_sum
+      - rotation
+      - nd
+      - nd_exp
+      - vae

@@ -1,0 +1,19 @@
+name: mnist-sweep
+program: mains/train_mnist.py
+project: linear-ae-neurips
+method: grid
+parameters:
+  optimizer:
+    distribution: categorical
+    values:
+      - SGD
+      - Adam
+  model_name:
+    distribution: categorical
+    values:
+      - uniform_sum
+      - non_uniform_sum
+      - rotation
+      - nd
+      - nd_exp
+      - vae
