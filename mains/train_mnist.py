@@ -3,7 +3,6 @@ import torch
 import torchvision
 import numpy as np
 import wandb
-
 from models.data_generators import DataGeneratorPCA
 from utils.train import train_models
 from configs.utils import create_model_from_config, create_metric_config, update_config
@@ -14,8 +13,8 @@ from configs.mnist import optimal_lrs
 # - optimizer: one of ('SGD', 'Adam')
 default_hparams = dict(
     hdim=20,
-    model_name=None,
-    optimizer=None,
+    model_name="rotation",
+    optimizer="Cp_RMSprop",
     train_itr=30000,
     seed=1234
 )
@@ -36,7 +35,7 @@ os.makedirs(ckpt_dir, exist_ok=True)
 # Get MNIST data
 input_dim = 28 * 28
 
-mnist_data = torchvision.datasets.MNIST(root='./data', train=True, download=True,
+mnist_data = torchvision.datasets.MNIST(root='../', train=True, download=True,
                                   transform=torchvision.transforms.Compose([
                                       torchvision.transforms.ToTensor()
                                   ]))

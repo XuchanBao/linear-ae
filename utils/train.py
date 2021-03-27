@@ -5,7 +5,6 @@ import wandb
 from models.model_config import ModelTypes
 from utils.logger import TrainStats, WeightHistory
 
-
 def train_models(data_loader, train_itr, metrics_dict, model_configs,
                  eval_metrics_list=None, tie_weights=False, logger=None, ckpt_dir=None):
     first_model = model_configs[0].get_model()
@@ -62,6 +61,12 @@ def train_models(data_loader, train_itr, metrics_dict, model_configs,
 
                 loss.backward()
 
+#                if model_config.type == ModelTypes.ROTATION and (model_config.optimizer.grad_type == "RMSprop_grad_acc" or model_config.optimizer.grad_type == "RMSprop_rotation_acc"):
+#                    y = model.encoder.weight @ x_cuda.T
+#                    yy_t_norm = y @ y.T 
+#                    yy_t_upper = yy_t_norm - yy_t_norm.tril()
+#                    gamma = 0.5 * (yy_t_upper - yy_t_upper.T)
+#                elif model_config.type == ModelTypes.ROTATION:
                 if model_config.type == ModelTypes.ROTATION:
                     y = model.encoder.weight @ x_cuda.T
                     yy_t_norm = y @ y.T / float(len(x))
@@ -70,6 +75,10 @@ def train_models(data_loader, train_itr, metrics_dict, model_configs,
                     model.encoder.weight.grad -= gamma @ model.encoder.weight
                     model.decoder.weight.grad -= model.decoder.weight @ gamma.T
 
+#                if model_config.optimizer.grad_type == "RMSprop_grad_acc" or model_config.optimizer.grad_type == "RMSprop_rotation_acc":
+#                    optimizer.step(gamma=gamma, batch_size=len(x))
+#                else:
+#                    optimizer.step()
                 optimizer.step()
 
                 losses[model_config.name] = loss.item()

@@ -1,11 +1,13 @@
 import torch
 import numpy as np
 import wandb
+import ipdb
 from models.linear_autoencoder import LinearAE
 from models.linear_ae_nested_dropout import LinearAENestedDropout
 from models.linear_vae import LinearVAE
 from models.model_config import ModelTypes, ModelConfig
 from utils.metrics import metric_alignment, metric_transpose_theorem, metric_subspace, metric_loss, metric_recon_loss
+from utils.optimizers import CpRMSprop, MyRMSprop
 
 
 def create_model_from_config(config, input_dim, init_scale=0.0001, reg_min=0.1, reg_max=0.9):
@@ -15,6 +17,15 @@ def create_model_from_config(config, input_dim, init_scale=0.0001, reg_min=0.1, 
     elif config.optimizer == 'SGD':
         optim_class = torch.optim.SGD
         extra_optim_args = {'momentum': 0.9, 'nesterov': True}
+    elif config.optimizer == 'RMSprop':
+        optim_class = torch.optim.RMSprop
+        extra_optim_args = {}
+    elif config.optimizer == 'Cp_RMSprop':
+        optim_class = CpRMSprop
+        extra_optim_args = {}
+    elif config.optimizer == 'RMSprop_grad_acc' or config.optimizer == 'RMSprop_rotation_acc':
+        optim_class = MyRMSprop
+        extra_optim_args = {'grad_type': config.optimizer}
     else:
         raise ValueError('config parameter "optimizer" needs to be one of ("Adam", "SGD")')
 
@@ -111,7 +122,6 @@ def update_config(optimal_lrs):
     else:
         model_type = wandb.config.model_name
         nd_expectation = None
-
     lr = optimal_lrs[wandb.config.model_name][wandb.config.optimizer][wandb.config.hdim]
 
     wandb.config.update({'model_type': model_type, 'nd_expectation': nd_expectation, 'lr': lr})
